@@ -1,0 +1,812 @@
+
+
+
+w<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Gift Poster 🎉</title>
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #1a1a1a, #000);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* ✨ Light bulbs background */
+    .lights {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .bulb {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: yellow;
+      box-shadow: 0 0 15px yellow;
+      animation: blink 1s infinite alternate;
+      filter: blur(1px);
+    }
+
+    @keyframes blink {
+      from { opacity: 0.3; transform: scale(1); }
+      to { opacity: 1; transform: scale(1.3); }
+    }
+
+    /* 🎁 Poster Card Base (responsive) */
+    .poster {
+      width: clamp(260px, 42vw, 420px);
+      aspect-ratio: 17 / 22; /* keeps original 340x440 ratio */
+      perspective: 1200px;
+      cursor: pointer;
+      z-index: 2;
+      will-change: transform;
+      transition: transform 160ms ease; /* faster, snappier */
+      max-width: 92vw;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 420ms cubic-bezier(.2,.9,.22,1); /* quicker flip */
+    }
+
+    .card.open {
+      transform: rotateY(180deg);
+    }
+
+    .front, .back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      backface-visibility: hidden;
+      overflow: hidden;
+      box-shadow: 0 0 25px rgba(255,255,255,0.25);
+    }
+
+    /* ensure front is the stacking context for the mystery box */
+    .card { position: relative; }
+
+    /* 🖼 Front poster */
+    .front {
+      background: url('https://cdn.pixabay.com/photo/2023/10/06/10/24/happy-birthday-8297772_1280.jpg');
+      background-position: center;
+      background-size: 80%;
+      background-repeat: no-repeat;
+      background-color: #ff8c00;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      animation: floatBox 1.6s ease-in-out infinite; /* faster subtle float */
+    }
+
+    @keyframes floatBox {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .lighting-text {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #FFD700;
+      text-shadow: 
+        0 0 5px #FFA500,
+        0 0 10px #FFA500,
+        0 0 20px #FFA500,
+        0 0 40px #FFA500;
+      animation: glow 0.9s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% {
+        opacity: 1;
+        text-shadow:
+          0 0 4px #FFA500,
+          0 0 8px #FFA500,
+          0 0 12px #FFA500;
+      }
+      50% {
+        opacity: 0.9;
+        text-shadow:
+          0 0 8px #FFD700,
+          0 0 14px #FFD700,
+          0 0 20px #FFD700;
+      }
+    }
+
+    /* Mystery box (center of front poster) */
+    .mystery-wrap {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      pointer-events: auto;
+      width: clamp(120px, 36%, 180px);
+      height: clamp(100px, 28%, 160px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    .mystery-box {
+      width: min(86%, 140px);
+      height: min(86%, 100px);
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 320ms cubic-bezier(.2,.9,.22,1); /* faster open */
+      cursor: pointer;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,0.32));
+    }
+
+    .mystery-box .lid {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120%;
+      height: 56%;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #ffdb7d, #ff8fb1);
+      transform-origin: center bottom;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.45), inset 0 -6px 18px rgba(255,255,255,0.12);
+      transition: transform 280ms cubic-bezier(.2,.9,.22,1);
+      z-index: 4;
+    }
+
+    .mystery-box .base {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 64%;
+      border-radius: 10px;
+      background: linear-gradient(180deg,#8b5cf6 0%, #6f2ce8 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      z-index: 2;
+      box-shadow: inset 0 6px 18px rgba(255,255,255,0.03);
+    }
+
+    .mystery-box .glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      opacity: 0;
+      transition: opacity 220ms ease;
+      z-index: 3;
+      background: radial-gradient(circle at 50% 40%, rgba(255,220,120,0.45), rgba(255,120,180,0.12) 35%, transparent 60%);
+      border-radius: 12px;
+    }
+
+    .mystery-box.open .lid {
+      transform: translateX(-50%) translateY(-28px) rotateX(68deg) rotate(-6deg);
+    }
+
+    .mystery-box.open .glow {
+      opacity: 1;
+    }
+
+    /* reduce heaviness on smaller screens */
+    @media (max-width: 520px) {
+      .poster { width: min(88vw, 320px); }
+      .mystery-wrap { width: 140px; height: 120px; }
+      .mystery-box { filter: drop-shadow(0 8px 18px rgba(0,0,0,0.3)); }
+      .lights { opacity: 0.85; }
+    }
+
+    /* Respect users who prefer reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .floatBox,
+      .lighting-text,
+      .mystery-box,
+      .mystery-box .lid,
+      .mystery-wrap .particle {
+        animation: none !important;
+        transition: none !important;
+      }
+      .mystery-box { transform: none !important; }
+    }
+
+    /* particles */
+    .mystery-wrap .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      opacity: 0;
+      pointer-events: none;
+      transform-origin: center;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.25));
+      animation: particleUp 900ms forwards ease-out;
+    }
+
+    @keyframes particleUp {
+      0% { transform: translateY(0) scale(0.6) rotate(0deg); opacity: 1; }
+      70% { opacity: 1; }
+      100% { transform: translateY(-90px) translateX(24px) rotate(320deg) scale(0.6); opacity: 0; }
+    }
+
+    /* 🎨 Back poster */
+    .back {
+      background: url('./WhatsApp Image 2025-10-31 at 18.17.21_2af5f3a5.jpg');
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      transform: rotateY(180deg);
+      position: relative;
+    }
+
+    .back::after {
+      content: "✨ Double-click to view full image ✨";
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      animation: glowHint 2s infinite;
+      backdrop-filter: blur(5px);
+    }
+
+    @keyframes glowHint {
+      0%, 100% {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        transform: translateX(-50%) scale(1);
+      }
+      50% {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        transform: translateX(-50%) scale(1.05);
+      }
+    }
+
+    /* Small "Tap" hint */
+    .front::after {
+      content: "🎁 Tap to Reveal 🎉";
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      cursor: pointer;
+    }
+
+    .modal img {
+      max-width: 90%;
+      max-height: 90vh;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 3px solid white;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.3);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.6);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Comment Section Styles */
+    .comment-section {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 18px; /* tightened spacing to bring section closer */
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      transition: transform 0.3s ease;
+    }
+
+    /* Header inside comment section - birthday wish styling */
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      transform-origin: center;
+      animation: headerIntro 600ms ease-out both;
+    }
+
+    .wish-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff3a7, #ffd166 40%, #ff7ab6 100%);
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      box-shadow: 0 6px 18px rgba(255, 122, 122, 0.25), 0 0 30px rgba(255,200,80,0.08) inset;
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .wish-icon:hover {
+      transform: scale(1.08) rotate(-6deg);
+      box-shadow: 0 10px 28px rgba(255, 122, 122, 0.34), 0 0 36px rgba(255,220,120,0.12) inset;
+    }
+
+    .wish-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff9e6;
+      letter-spacing: 0.2px;
+      text-shadow: 0 6px 20px rgba(0,0,0,0.45);
+      display: flex;
+      flex-direction: column;
+      line-height: 1.05;
+    }
+
+    .wish-text .main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .wish-text .sub {
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+      opacity: 0.9;
+      margin-top: 2px;
+      transform: translateY(0);
+    }
+
+    @keyframes headerIntro {
+      from { opacity: 0; transform: translateY(8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* small sparkle animation on the right when hovering the section */
+    .comment-section:hover .wish-icon::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      right: -6px;
+      top: -6px;
+      background: radial-gradient(circle, #fff9d6, #ffd166 50%, rgba(255,255,255,0));
+      box-shadow: 0 6px 18px rgba(255,200,80,0.45);
+      animation: sparkle 900ms ease-in-out infinite;
+    }
+
+    @keyframes sparkle {
+      0% { transform: translateY(0) scale(0.6); opacity: 0.9; }
+      50% { transform: translateY(-6px) scale(1); opacity: 1; }
+      100% { transform: translateY(0) scale(0.6); opacity: 0.9; }
+    }
+
+    .comment-section:hover {
+      transform: translateY(-5px);
+    }
+
+    .comment-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .comment-form input,
+    .comment-form textarea {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .comment-form input::placeholder,
+    .comment-form textarea::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .comment-form input:focus,
+    .comment-form textarea:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+
+    .submit-btn {
+      padding: 12px 24px;
+      background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: rotate(45deg);
+      transition: all 0.3s ease;
+      opacity: 0;
+    }
+
+    .submit-btn:hover::after {
+      opacity: 1;
+      transform: rotate(45deg) translate(-50%, -50%);
+    }
+
+    .success-message {
+      display: none;
+      padding: 15px;
+      background: rgba(46, 213, 115, 0.2);
+      border-radius: 8px;
+      color: #2ed573;
+      text-align: center;
+      margin-top: 15px;
+      backdrop-filter: blur(5px);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .error {
+      animation: shake 0.5s ease-in-out;
+      border-color: #ff6b6b !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lights"><div class="bulb" style="top: 74.8928%; left: 1.51021%; background: rgb(255, 0, 255); box-shadow: rgb(255, 0, 255) 0px 0px 15px; animation-duration: 0.652462s;"></div><div class="bulb" style="top: 13.2559%; left: 6.30078%; background: rgb(0, 255, 255); box-shadow: rgb(0, 255, 255) 0px 0px 15px; animation-duration: 0.906848s;"></div><div class="bulb" style="top: 94.0758%; left: 58.9029%; background: rgb(255, 255, 0); box-shadow: rgb(255, 255, 0) 0px 0px 15px; animation-duration: 1.35826s;"></div><div class="bulb" style="top: 53.3325%; left: 55.466%; background: rgb(0, 255, 255); box-shadow: rgb(0, 255, 255) 0px 0px 15px; animation-duration: 0.793336s;"></div><div class="bulb" style="top: 43.3146%; left: 61.0356%; background: rgb(255, 102, 0); box-shadow: rgb(255, 102, 0) 0px 0px 15px; animation-duration: 1.35944s;"></div><div class="bulb" style="top: 75.7701%; left: 47.3129%; background: rgb(255, 0, 255); box-shadow: rgb(255, 0, 255) 0px 0px 15px; animation-duration: 1.17917s;"></div><div class="bulb" style="top: 51.7712%; left: 94.3576%; background: rgb(255, 102, 0); box-shadow: rgb(255, 102, 0) 0px 0px 15px; animation-duration: 1.31142s;"></div><div class="bulb" style="top: 26.2063%; left: 17.0791%; background: rgb(255, 0, 255); box-shadow: rgb(255, 0, 255) 0px 0px 15px; animation-duration: 1.00101s;"></div><div class="bulb" style="top: 59.6425%; left: 15.7639%; background: rgb(255, 0, 255); box-shadow: rgb(255, 0, 255) 0px 0px 15px; animation-duration: 0.815734s;"></div><div class="bulb" style="top: 67.03%; left: 72.5804%; background: rgb(255, 102, 0); box-shadow: rgb(255, 102, 0) 0px 0px 15px; animation-duration: 0.542324s;"></div><div class="bulb" style="top: 67.4903%; left: 18.781%; background: rgb(255, 102, 0); box-shadow: rgb(255, 102, 0) 0px 0px 15px; animation-duration: 0.525532s;"></div><div class="bulb" style="top: 62.4745%; left: 5.20721%; background: rgb(255, 102, 0); box-shadow: rgb(255, 102, 0) 0px 0px 15px; animation-duration: 0.777251s;"></div><div class="bulb" style="top: 27.1199%; left: 22.1698%; background: rgb(255, 0, 255); box-shadow: rgb(255, 0, 255) 0px 0px 15px; animation-duration: 1.20453s;"></div><div class="bulb" style="top: 50.6941%; left: 19.3553%; background: rgb(0, 255, 255); box-shadow: rgb(0, 255, 255) 0px 0px 15px; animation-duration: 0.657842s;"></div><div class="bulb" style="top: 31.9339%; left: 84.6345%; background: rgb(255, 102, 0); box-shadow: rgb(255, 102, 0) 0px 0px 15px; animation-duration: 0.761256s;"></div><div class="bulb" style="top: 78.098%; left: 72.6445%; background: rgb(255, 255, 0); box-shadow: rgb(255, 255, 0) 0px 0px 15px; animation-duration: 1.41365s;"></div><div class="bulb" style="top: 0.667101%; left: 43.4986%; background: rgb(255, 102, 0); box-shadow: rgb(255, 102, 0) 0px 0px 15px; animation-duration: 1.04782s;"></div><div class="bulb" style="top: 84.9715%; left: 90.2808%; background: rgb(255, 102, 0); box-shadow: rgb(255, 102, 0) 0px 0px 15px; animation-duration: 0.942226s;"></div><div class="bulb" style="top: 74.7429%; left: 18.106%; background: rgb(0, 255, 255); box-shadow: rgb(0, 255, 255) 0px 0px 15px; animation-duration: 0.72967s;"></div><div class="bulb" style="top: 58.1621%; left: 92.1879%; background: rgb(255, 0, 255); box-shadow: rgb(255, 0, 255) 0px 0px 15px; animation-duration: 1.09177s;"></div><div class="bulb" style="top: 20.5925%; left: 20.2294%; background: rgb(0, 255, 255); box-shadow: rgb(0, 255, 255) 0px 0px 15px; animation-duration: 1.11981s;"></div><div class="bulb" style="top: 38.7358%; left: 87.5045%; background: rgb(255, 255, 0); box-shadow: rgb(255, 255, 0) 0px 0px 15px; animation-duration: 1.40773s;"></div><div class="bulb" style="top: 82.7955%; left: 14.1361%; background: rgb(0, 255, 255); box-shadow: rgb(0, 255, 255) 0px 0px 15px; animation-duration: 0.809657s;"></div><div class="bulb" style="top: 49.8714%; left: 24.6927%; background: rgb(255, 102, 0); box-shadow: rgb(255, 102, 0) 0px 0px 15px; animation-duration: 0.99306s;"></div><div class="bulb" style="top: 37.5779%; left: 47.9382%; background: rgb(255, 255, 0); box-shadow: rgb(255, 255, 0) 0px 0px 15px; animation-duration: 1.19577s;"></div><div class="bulb" style="top: 92.949%; left: 0.778513%; background: rgb(255, 255, 0); box-shadow: rgb(255, 255, 0) 0px 0px 15px; animation-duration: 1.08307s;"></div><div class="bulb" style="top: 63.21%; left: 57.2759%; background: rgb(0, 255, 255); box-shadow: rgb(0, 255, 255) 0px 0px 15px; animation-duration: 0.530811s;"></div><div class="bulb" style="top: 99.5137%; left: 57.7247%; background: rgb(255, 0, 255); box-shadow: rgb(255, 0, 255) 0px 0px 15px; animation-duration: 0.847329s;"></div><div class="bulb" style="top: 62.4875%; left: 51.4026%; background: rgb(255, 102, 0); box-shadow: rgb(255, 102, 0) 0px 0px 15px; animation-duration: 0.574264s;"></div><div class="bulb" style="top: 73.2631%; left: 20.3326%; background: rgb(255, 255, 0); box-shadow: rgb(255, 255, 0) 0px 0px 15px; animation-duration: 0.99596s;"></div><div class="bulb" style="top: 80.8911%; left: 44.9916%; background: rgb(255, 255, 0); box-shadow: rgb(255, 255, 0) 0px 0px 15px; animation-duration: 0.734243s;"></div><div class="bulb" style="top: 89.23%; left: 43.7911%; background: rgb(0, 255, 255); box-shadow: rgb(0, 255, 255) 0px 0px 15px; animation-duration: 1.47s;"></div><div class="bulb" style="top: 8.86155%; left: 73.1969%; background: rgb(0, 255, 255); box-shadow: rgb(0, 255, 255) 0px 0px 15px; animation-duration: 0.581804s;"></div><div class="bulb" style="top: 47.364%; left: 82.9313%; background: rgb(255, 255, 0); box-shadow: rgb(255, 255, 0) 0px 0px 15px; animation-duration: 1.40566s;"></div><div class="bulb" style="top: 4.50229%; left: 11.063%; background: rgb(255, 102, 0); box-shadow: rgb(255, 102, 0) 0px 0px 15px; animation-duration: 1.01186s;"></div><div class="bulb" style="top: 99.295%; left: 96.8098%; background: rgb(255, 255, 0); box-shadow: rgb(255, 255, 0) 0px 0px 15px; animation-duration: 0.877803s;"></div><div class="bulb" style="top: 49.3453%; left: 82.6038%; background: rgb(255, 0, 255); box-shadow: rgb(255, 0, 255) 0px 0px 15px; animation-duration: 1.34535s;"></div><div class="bulb" style="top: 12.3462%; left: 74.8102%; background: rgb(0, 255, 255); box-shadow: rgb(0, 255, 255) 0px 0px 15px; animation-duration: 0.707668s;"></div><div class="bulb" style="top: 7.71301%; left: 52.3841%; background: rgb(255, 0, 255); box-shadow: rgb(255, 0, 255) 0px 0px 15px; animation-duration: 0.952145s;"></div><div class="bulb" style="top: 62.0865%; left: 17.9731%; background: rgb(255, 0, 255); box-shadow: rgb(255, 0, 255) 0px 0px 15px; animation-duration: 1.24643s;"></div></div>
+
+  <div class="poster" id="poster">
+    <div class="card" id="card">
+      <div class="front">
+        <div class="lighting-text">✨ Surprise Inside! ✨</div>
+        <div class="lighting-text" style="font-size: 18px;"></div>
+
+        <!-- Classic mystery box centered on the front poster -->
+        <div class="mystery-wrap" aria-hidden="false">
+          <div class="mystery-box" id="mysteryBox" role="button" tabindex="0" aria-pressed="false" title="Open the mystery">
+            <div class="lid"></div>
+            <div class="base">?</div>
+            <div class="glow" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+      <div class="back" id="back"></div>
+    </div>
+  </div>
+
+  <!-- Modal for full image view -->
+  <div class="modal" id="imageModal" style="display: none;">
+    <span class="close-modal" id="closeBtn" role="button" aria-label="Close">×</span>
+    <img id="fullImage" src="./WhatsApp Image 2025-10-31 at 18.17.21_2af5f3a5.jpg" alt="Full size image">
+  </div>
+
+  <!-- Comment Section -->
+  <div class="comment-section">
+    <!-- Header with icon + lighting text for birthday-feel -->
+    <div class="comment-header">
+      <div class="wish-icon" aria-hidden="true">🎂</div>
+      <div class="wish-text">
+        <div class="main">Send a Birthday Wish</div>
+        <div class="sub">Drop a short message — I'll receive it by email ✨</div>
+      </div>
+    </div>
+
+    <!-- Using FormSubmit.co AJAX endpoint so submissions are emailed to you.
+         IMPORTANT: you'll need to confirm the FormSubmit verification email first.
+    -->
+    <form id="commentForm" class="comment-form" action="https://formsubmit.co/ajax/avonsharmabhind70@gmail.com" method="POST">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="email" name="email" placeholder="Your Email" required>
+      <textarea name="comment" placeholder="Agar achha na ho to comment na karna..." rows="4" required></textarea>
+      <!-- Extra hidden fields for FormSubmit options -->
+      <input type="hidden" name="_subject" value="New Birthday Wish!">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <!-- _next is not needed for AJAX but kept as fallback -->
+      <input type="hidden" name="_next" value="http://127.0.0.1:5500/index.html?success=true">
+      <button type="submit" class="submit-btn">Send Birthday's Excitements✨</button>
+    </form>
+    <div class="success-message" id="successMessage">
+      Thank you for your lovely birthday wish! 🎉
+    </div>
+    <div class="success-message" id="errorMessage" style="display:none; color: #ff7b7b; background: rgba(255,107,107,0.08);">Unable to send. Please try again later.</div>
+  </div>
+
+  <script>
+    // 🌟 Create glowing lights
+    const lightsContainer = document.querySelector('.lights');
+    for (let i = 0; i < 40; i++) {
+      const bulb = document.createElement('div');
+      bulb.classList.add('bulb');
+      bulb.style.top = Math.random() * 100 + '%';
+      bulb.style.left = Math.random() * 100 + '%';
+      bulb.style.background = ['#ff0','#0ff','#f0f','#ff6600'][Math.floor(Math.random()*4)];
+      bulb.style.boxShadow = `0 0 15px ${bulb.style.background}`;
+      bulb.style.animationDuration = (0.5 + Math.random()) + 's';
+      lightsContainer.appendChild(bulb);
+    }
+
+    // 💫 Card flip effect
+    function openCard() {
+      document.getElementById('card').classList.toggle('open');
+    }
+
+    function openFullImage(event) {
+      // event may be passed from dblclick listener
+      if (event && event.stopPropagation) event.stopPropagation(); // Prevent card flip when opening modal
+      document.getElementById('imageModal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('imageModal').style.display = 'none';
+    }
+
+    // Attach event listeners instead of inline handlers
+    (function() {
+      const posterEl = document.getElementById('poster');
+      const backEl = document.getElementById('back');
+      const modalEl = document.getElementById('imageModal');
+      const fullImg = document.getElementById('fullImage');
+      const closeBtn = document.getElementById('closeBtn');
+
+      if (posterEl) posterEl.addEventListener('click', openCard);
+      if (backEl) backEl.addEventListener('dblclick', openFullImage);
+      // Mystery box interactions (prevent poster flip when interacting with box)
+      const mysteryBox = document.getElementById('mysteryBox');
+      if (mysteryBox) {
+        mysteryBox.addEventListener('click', function(e) {
+          e.stopPropagation();
+          this.classList.toggle('open');
+          this.setAttribute('aria-pressed', this.classList.contains('open'));
+          // spawn small particles when opened
+          if (this.classList.contains('open')) spawnMysteryParticles(this.parentElement);
+        });
+        // keyboard accessibility (Enter/Space)
+        mysteryBox.addEventListener('keydown', function(e){
+          if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+            e.preventDefault();
+            this.click();
+          }
+        });
+      }
+      if (modalEl) modalEl.addEventListener('click', closeModal);
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (fullImg) fullImg.addEventListener('click', function(e){ e.stopPropagation(); });
+
+      // Close modal with Escape key
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+          closeModal();
+        }
+      });
+
+      // Handle form submission success
+      if (window.location.search.includes('success=true')) {
+        const successMessage = document.getElementById('successMessage');
+        if (successMessage) {
+          successMessage.style.display = 'block';
+          // Hide the success message after 5 seconds
+          setTimeout(() => {
+            successMessage.style.display = 'none';
+          }, 5000);
+        }
+      }
+
+      // Form validation and animation
+      const form = document.querySelector('.comment-form');
+      const inputs = form.querySelectorAll('input[required], textarea[required]');
+
+      inputs.forEach(input => {
+        input.addEventListener('invalid', (e) => {
+          e.preventDefault();
+          input.classList.add('error');
+          setTimeout(() => {
+            input.classList.remove('error');
+          }, 500);
+        });
+
+        input.addEventListener('input', () => {
+          input.classList.remove('error');
+        });
+      });
+
+      // AJAX submit using FormSubmit.co
+      const commentForm = document.getElementById('commentForm');
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+
+      if (commentForm) {
+        commentForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          const submitBtn = commentForm.querySelector('.submit-btn');
+          submitBtn.disabled = true;
+          const originalText = submitBtn.textContent;
+          submitBtn.textContent = 'Sending...';
+
+          const fd = new FormData(commentForm);
+
+          fetch(commentForm.action, {
+            method: 'POST',
+            body: fd,
+            headers: { 'Accept': 'application/json' }
+          })
+          .then(response => response.json())
+          .then(data => {
+            // FormSubmit returns success:true or a message
+            if (data && (data.success === true || data.success == 'true' || data.message)) {
+              if (successMessage) successMessage.style.display = 'block';
+              if (errorMessage) errorMessage.style.display = 'none';
+              commentForm.reset();
+            } else {
+              if (errorMessage) errorMessage.style.display = 'block';
+              if (successMessage) successMessage.style.display = 'none';
+            }
+          })
+          .catch(err => {
+            console.error('Form submit error:', err);
+            if (errorMessage) errorMessage.style.display = 'block';
+            if (successMessage) successMessage.style.display = 'none';
+          })
+          .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+            setTimeout(() => {
+              if (successMessage) successMessage.style.display = 'none';
+              if (errorMessage) errorMessage.style.display = 'none';
+            }, 5000);
+          });
+        });
+      }
+
+      // particle spawn helper used by mystery box
+      function spawnMysteryParticles(container) {
+        if (!container) return;
+        const colors = ['#ffd166','#ff6b6b','#06d6a0','#4d7cff','#f783ac'];
+        for (let i=0;i<12;i++) {
+          const p = document.createElement('div');
+          p.className = 'particle';
+          p.style.background = colors[i % colors.length];
+          // random position near the box
+          p.style.left = (40 + Math.random()*40) + '%';
+          p.style.bottom = (20 + Math.random()*20) + '%';
+          p.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
+          // random animation end offset using inline style and animation delay
+          p.style.animationDelay = (Math.random()*120) + 'ms';
+          container.appendChild(p);
+          // remove after animation (shortened to match faster animation)
+          setTimeout(()=> { if (p && p.parentNode) p.parentNode.removeChild(p); }, 800);
+        }
+      }
+    })();
+  </script>
+
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+<span style="border-radius:10px !important;text-indent:12px !important;width:auto !important;height:20px !important;padding:0px 8px !important;text-align:center !important;vertical-align:middle !important;font:bold 11px / 20px &quot;Helvetica Neue&quot;, Helvetica, sans-serif !important;color:rgb(255, 255, 255) !important;background:url(&quot;data:image/svg+xml;base64,PHN2ZyBpZD0ic291cmNlIiB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHZpZXdCb3g9IjAgMCAxMiAxMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNiIgY3k9IjYiIHI9IjYiIGZpbGw9IiNFNjAwMjMiPjwvY2lyY2xlPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTAgNkMwIDguNTYxNSAxLjYwNTUgMTAuNzQ4NSAzLjg2NSAxMS42MDlDMy44MSAxMS4xNDA1IDMuNzUxNSAxMC4zNjggMy44Nzc1IDkuODI2QzMuOTg2IDkuMzYgNC41NzggNi44NTcgNC41NzggNi44NTdDNC41NzggNi44NTcgNC4zOTk1IDYuNDk5NSA0LjM5OTUgNS45N0M0LjM5OTUgNS4xNCA0Ljg4MDUgNC41MiA1LjQ4IDQuNTJDNS45OSA0LjUyIDYuMjM2IDQuOTAyNSA2LjIzNiA1LjM2MUM2LjIzNiA1Ljg3MzUgNS45MDk1IDYuNjM5NSA1Ljc0MSA3LjM1QzUuNjAwNSA3Ljk0NDUgNi4wMzk1IDguNDI5NSA2LjYyNTUgOC40Mjk1QzcuNjg3IDguNDI5NSA4LjUwMzUgNy4zMSA4LjUwMzUgNS42OTRDOC41MDM1IDQuMjYzNSA3LjQ3NTUgMy4yNjQgNi4wMDggMy4yNjRDNC4zMDkgMy4yNjQgMy4zMTE1IDQuNTM4NSAzLjMxMTUgNS44NTZDMy4zMTE1IDYuMzY5NSAzLjUwOSA2LjkxOTUgMy43NTYgNy4yMTlDMy44MDQ1IDcuMjc4NSAzLjgxMiA3LjMzIDMuNzk3NSA3LjM5MDVDMy43NTIgNy41Nzk1IDMuNjUxIDcuOTg1IDMuNjMxNSA4LjA2OEMzLjYwNSA4LjE3NyAzLjU0NSA4LjIwMDUgMy40MzE1IDguMTQ3NUMyLjY4NTUgNy44MDA1IDIuMjE5NSA2LjcxIDIuMjE5NSA1LjgzNEMyLjIxOTUgMy45NDk1IDMuNTg4IDIuMjE5NSA2LjE2NTUgMi4yMTk1QzguMjM3NSAyLjIxOTUgOS44NDggMy42OTYgOS44NDggNS42NjlDOS44NDggNy43Mjc1IDguNTUwNSA5LjM4NDUgNi43NDg1IDkuMzg0NUM2LjE0MyA5LjM4NDUgNS41NzQ1IDkuMDY5NSA1LjM3OTUgOC42OThDNS4zNzk1IDguNjk4IDUuMDggOS44MzkgNS4wMDc1IDEwLjExOEM0Ljg2NjUgMTAuNjYgNC40NzU1IDExLjM0NiA0LjIzMyAxMS43MzU1QzQuNzkyIDExLjkwNzUgNS4zODUgMTIgNiAxMkM5LjMxMzUgMTIgMTIgOS4zMTM1IDEyIDZDMTIgMi42ODY1IDkuMzEzNSAwIDYgMEMyLjY4NjUgMCAwIDIuNjg2NSAwIDZaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8L3N2Zz4=&quot;) 4px 50% / 12px 12px no-repeat rgb(230, 0, 35) !important;position:absolute !important;opacity:1 !important;z-index:9007199254740990 !important;display:none !important;cursor:pointer !important;border:none !important;-webkit-font-smoothing:antialiased !important;top:0 !important;left:0 !important;display:none !important;top:42px !important;left:567px !important">Save</span></body></html>
